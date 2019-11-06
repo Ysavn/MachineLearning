@@ -52,7 +52,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 #train for N epochs
-N  = 2
+N  = 0
 for epoch in range(N):
     running_loss = 0
     for i, data in enumerate(trainloader):
@@ -74,8 +74,13 @@ print('Finished Training')
 
 #save the trained model to resue on the test set
 PATH = './cifar_net.pth'
-torch.save(net.state_dict(), PATH)
+#torch.save(net.state_dict(), PATH)
 net.load_state_dict(torch.load(PATH))
+
+params = list(net.parameters())
+for param in params:
+    print(param.size())
+
 dataiter = iter(testloader)
 images, labels = dataiter.next()
 
