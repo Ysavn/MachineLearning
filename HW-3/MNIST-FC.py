@@ -14,11 +14,7 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size =32, shuffle=True
 testset = torchvision.datasets.MNIST(root='./data', train=False, download = True, transform = transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size =32, shuffle=True, num_workers = 2)
 
-dataiter = iter(trainloader)
-images, labels = dataiter.next()
-#print(images.shape)
-#print(labels.shape)
-
+#Fully Connected Neural Network
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -32,6 +28,7 @@ class Net(nn.Module):
         x = F.softmax(x, dim=1)
         return x
 
+#calculate Training accuracy
 def training_accuracy(trainloader):
     total = 0
     correct = 0
@@ -44,6 +41,7 @@ def training_accuracy(trainloader):
             correct += (predicted == labels).sum().item()
     return correct*100/total
 
+#calculate Test Accuracy
 def test_accuracy(testloader):
     correct = 0
     total = 0
@@ -61,6 +59,7 @@ net = Net()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
 
+#training the model for 15 epochs, currently N = 0 as using pretrained model saved as mnist-fc.pth
 N = 0
 train_loss = []
 train_accuracy = []
@@ -73,9 +72,9 @@ for epoch in range(N):
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
-        running_loss += loss.item()
-
-    print(running_loss, training_accuracy(trainloader))
+        running_loss += loss.item()*input.shape[0]
+    running_loss /= len(trainset)
+    #print(running_loss, training_accuracy(trainloader))
     train_loss.append(running_loss)
     train_accuracy.append(training_accuracy(trainloader))
 
@@ -99,4 +98,5 @@ ax1.plot(num_epoch, train_loss, color = 'b')
 ax2.plot(num_epoch, train_accuracy, color = 'g')
 plt.show()
 
+#Accuracy on the test set
 test_accuracy(testloader)
